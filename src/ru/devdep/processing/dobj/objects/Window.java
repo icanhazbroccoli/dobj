@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import processing.core.*;
+
 import ru.devdep.processing.dobj.events.CatchableMouseEvent;
 
 public class Window extends DObject {

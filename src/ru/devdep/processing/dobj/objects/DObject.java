@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.lang.Math;
 
 import ru.devdep.processing.dobj.animation.*;
-import ru.devdep.processing.dobj.events.Catchable;
-import ru.devdep.processing.dobj.events.CatchableMouseEvent;
+import ru.devdep.processing.dobj.events.*;
+
 import processing.core.*;
 
 public class DObject extends Observable implements Observer,
@@ -195,7 +195,7 @@ public class DObject extends Observable implements Observer,
 		return animate( start, end, duration, AnimationChain.EASE_LINEAR, handler );
 	}
 	
-	public AnimationChain animate( float start, float end, int duration, int mode, Lambda handler ) {
+	public AnimationChain animate( float start, float end, int duration, int mode, Lambda<Float> handler ) {
 		AnimationChain ac = new AnimationChain();
 		ac.queue( start, end, duration, mode, handler );
 		return ac;
