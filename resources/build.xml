@@ -41,6 +41,7 @@
 	
 	
 	<property name="project.jar.name" value="${project.name}.jar"/>
+	<property name="project.scripts" location="scripts"/>
 	<property name="project.src" location="src"/>
 	<property name="project.tmp" location="tmp"/>
 	<property name="project.web" location="web"/>
@@ -162,6 +163,7 @@ ${line}
 	  	<mkdir dir="${project.tmp}/${project.name}/${folder}" />
   		<mkdir dir="${project.tmp}/${project.name}/examples" />
 	  	<mkdir dir="${project.tmp}/${project.name}/reference" />
+      <mkdir dir="${project.tmp}/${project.name}/scripts" />
   		<mkdir dir="${project.tmp}/${project.name}/src" />
   		<copy todir="${project.tmp}/${project.name}/examples">
   			<fileset dir="${project.examples}">
@@ -174,6 +176,9 @@ ${line}
 	  	<copy todir="${project.tmp}/${project.name}/${folder}">
   			<fileset dir="${project.lib}" excludes="README" />
 	  	</copy>
+		  <copy todir="${project.tmp}/${project.name}/scripts">
+		    <fileset dir="${project.scripts}" />
+		  </copy>
 	</target>
 	
 	
