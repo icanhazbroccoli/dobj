@@ -115,6 +115,7 @@ ${line}
 		<antcall target="generate.web" />
 	  	<antcall target="generate.zip" />	
 	  	<delete dir="${project.tmp}"/>
+		<antcall target="chmod.scripts"><param name="folder" value="libraries"/></antcall>
 	</target>
 	
 	
@@ -179,6 +180,10 @@ ${line}
 		  <copy todir="${project.tmp}/${project.name}/scripts">
 		    <fileset dir="${project.scripts}" />
 		  </copy>
+	</target>
+	
+	<target name="chmod.scripts">
+		<chmod perm="755" dir="${sketchbook.location}/${folder}/${project.name}/scripts" includes="*"/>
 	</target>
 	
 	
