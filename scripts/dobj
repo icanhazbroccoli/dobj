@@ -28,13 +28,14 @@ Window window;
 public void setup() {
   TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Moscow" ) );
   noStroke();
-  size( #{opts[:width]==0 ? "displayWidth" : "DISPLAY_WIDTH"}, #{opts[:height]==0 ? "displayHeight" : "DISPLAY_HEIGHT"}, #{opts[:mode].upcase} );
+  w = new Window( this, #{opts[:width]==0 ? "displayWidth" : "DISPLAY_WIDTH"}, #{opts[:height]==0 ? "displayHeight" : "DISPLAY_HEIGHT"}, #{opts[:mode].upcase} );
+  scale_factor = (float)displayWidth / (float)BASE_DISPLAY_WIDTH;
+  w.setScale( scale_factor );
   frameRate( FRAMERATE );
   smooth();
   bg_color = color( 0 );
   if ( IS_DEBUG )
     setupFPS();
-  scale_factor = (float)displayWidth / (float)BASE_DISPLAY_WIDTH;
 }
 
 public void setupFPS() {
@@ -44,6 +45,7 @@ public void setupFPS() {
 public void draw() {
   background( bg_color );
   // place code here
+  w.draw();
   if ( IS_DEBUG )
     drawFPS();
 }
