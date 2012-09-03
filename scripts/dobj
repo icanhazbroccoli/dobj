@@ -9,8 +9,10 @@ class AppBuilder
       templates = {}
 templates[ :base ] = <<-eos
 #{"import processing.opengl.*;" if opts[:mode]=="opengl"}
-import document_object.objects.*;
-import document_object.animation.*;
+import ru.devdep.processing.dobj.objects.*;
+import ru.devdep.processing.dobj.events.*;
+import ru.devdep.processing.dobj.animation.*;
+
 
 #{"final static short DISPLAY_WIDTH = #{opts[:width]};" if opts[:width != 0]}
 #{"final static short DISPLAY_HEIGHT = #{opts[:height]};" if opts[:height != 0]}
@@ -26,13 +28,13 @@ Window window;
 public void setup() {
   TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Moscow" ) );
   noStroke();
-  size( #{opts[:width]==0 ? "screenWidth" : "DISPLAY_WIDTH"}, #{opts[:height]==0 ? "screenHeight" : "DISPLAY_HEIGHT"}, #{opts[:mode].upcase} );
+  size( #{opts[:width]==0 ? "displayWidth" : "DISPLAY_WIDTH"}, #{opts[:height]==0 ? "displayHeight" : "DISPLAY_HEIGHT"}, #{opts[:mode].upcase} );
   frameRate( FRAMERATE );
   smooth();
   bg_color = color( 0 );
   if ( IS_DEBUG )
     setupFPS();
-  scale_factor = (float)screenWidth / (float)BASE_DISPLAY_WIDTH;
+  scale_factor = (float)displayWidth / (float)BASE_DISPLAY_WIDTH;
 }
 
 public void setupFPS() {
