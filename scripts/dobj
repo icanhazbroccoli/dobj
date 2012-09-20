@@ -8,14 +8,13 @@ class AppBuilder
     def file_template( template_name, opts = {} )
       templates = {}
 templates[ :base ] = <<-eos
-#{"import processing.opengl.*;" if opts[:mode]=="opengl"}
-import ru.devdep.processing.dobj.objects.*;
+#{"import ru.devdep.processing.dobj.objects.*;
 import ru.devdep.processing.dobj.events.*;
 import ru.devdep.processing.dobj.animation.*;
 
 
-#{"final static short DISPLAY_WIDTH = #{opts[:width]};" if opts[:width != 0]}
-#{"final static short DISPLAY_HEIGHT = #{opts[:height]};" if opts[:height != 0]}
+#{"final static short DISPLAY_WIDTH = #{opts[:width]};" if opts[:width] != 0}
+#{"final static short DISPLAY_HEIGHT = #{opts[:height]};" if opts[:height] != 0}
 final static short FRAMERATE = #{opts[:fps]};
 final static Boolean IS_DEBUG = true;
 final static short BASE_DISPLAY_WIDTH = 1920;
@@ -28,9 +27,9 @@ Window window;
 public void setup() {
   TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Moscow" ) );
   noStroke();
-  w = new Window( this, #{opts[:width]==0 ? "displayWidth" : "DISPLAY_WIDTH"}, #{opts[:height]==0 ? "displayHeight" : "DISPLAY_HEIGHT"}, #{opts[:mode].upcase} );
+  window = new Window( this, #{opts[:width]==0 ? "displayWidth" : "DISPLAY_WIDTH"}, #{opts[:height]==0 ? "displayHeight" : "DISPLAY_HEIGHT"}, #{opts[:mode].upcase} );
   scale_factor = (float)displayWidth / (float)BASE_DISPLAY_WIDTH;
-  w.setScale( scale_factor );
+  window.setScale( scale_factor );
   frameRate( FRAMERATE );
   smooth();
   bg_color = color( 0 );
@@ -45,7 +44,7 @@ public void setupFPS() {
 public void draw() {
   background( bg_color );
   // place code here
-  w.draw();
+  window.draw();
   if ( IS_DEBUG )
     drawFPS();
 }
@@ -79,7 +78,7 @@ eos
         file.write( file_template( :base, opts ) )
         file.close
       end
-      if opts[ :git ]
+      if opts[:git]
         Dir.chdir( app_folder_name )
         system( "git init" )
         File.open( "#{app_folder_name}/.gitignore", "w+" ) do |file|
@@ -101,7 +100,7 @@ opts = Trollop::options do
   opt :height, "Sketch screen height, default is 0 means fill all the screen", :default => 0, :type => :int, :short => "-h"
   opt :path, "Sketch work folder, default is current", :default => Dir.pwd, :short => "-p"
   opt :force, "Skip prompt steps", :default => false, :short => "-f"
-  opt :git, "Initialize git repository", :default => true, :short => "-g"
+  opt :git, "Initialize git repository", :type => :flag, :default => false, :short => "-g"
 end
 
 cmd = ARGV.shift

@@ -153,6 +153,10 @@ public class AnimationChain implements Runnable {
 		this.timer = new Timer();
 	}
 	
+	public void stop() {
+		cancel();
+	}
+	
 	protected float ease( int mode, float t, float b, float c, float d ) {
 		float res = 0;
 		float s, p, a;

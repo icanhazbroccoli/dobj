@@ -16,14 +16,14 @@ public class Window extends DObject {
 		this.setDim( width, height );
 		this.setZIndex( 0 );
 		p.registerMouseEvent( this );
-		p.registerKeyEvent( this );
+		//p.registerKeyEvent( this );
 	}
 	
 	public void mouseEvent( MouseEvent e ) {
 		this.captureEvent( new CatchableMouseEvent( e ) );
 	}
 	
-	public void keyEvent( KeyEvent e ) {
-		this.captureEvent( e );
-	}
+//	public void keyEvent( KeyEvent e ) {
+//		this.captureEvent( e );
+//	}
 }

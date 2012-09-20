@@ -19,20 +19,17 @@ public class CatchableMouseEvent extends MouseEvent implements Catchable {
 	public CatchableMouseEvent(Component arg0, int arg1, long arg2, int arg3,
 			int arg4, int arg5, int arg6, boolean arg7) {
 		super(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CatchableMouseEvent(Component arg0, int arg1, long arg2, int arg3,
 			int arg4, int arg5, int arg6, boolean arg7, int arg8) {
 		super(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-		// TODO Auto-generated constructor stub
 	}
 
 	public CatchableMouseEvent(Component arg0, int arg1, long arg2, int arg3,
 			int arg4, int arg5, int arg6, int arg7, int arg8, boolean arg9,
 			int arg10) {
 		super(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-		// TODO Auto-generated constructor stub
 	}
 
 	public void stopPropagation() {

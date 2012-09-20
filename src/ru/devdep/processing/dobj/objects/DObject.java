@@ -50,11 +50,10 @@ public class DObject extends Observable implements Observer,
 	
 	protected void render() {}
 
-	protected void withModifiers( Runnable scope_runner ) {
-		final Runnable _scope_runner = scope_runner;
+	protected void withModifiers( final Runnable scope_runner ) {
 		final float current_scale = this.scale;
 		withTranslate( getPosX(), getPosY(), new Runnable() { public void run() {
-			withScale( current_scale, _scope_runner );
+			withScale( current_scale, scope_runner );
 		} } );
 	}
 	
@@ -135,11 +134,9 @@ public class DObject extends Observable implements Observer,
 	}
 
 	public int compareTo( DObject d ) {
-		final int z_index1 = this.getZIndex();
-	    final int z_index2 = d.getZIndex();
-	    return ( z_index1 == z_index2 ) ?
-	    		( 0 ) : 
-	    			( ( z_index1 > z_index2 ) ? -1 : 1 );
+		final Integer z_index1 = this.getZIndex();
+	    final Integer z_index2 = d.getZIndex();
+	    return z_index1.compareTo( z_index2 );
 	}
 
 	public Boolean intersect( AWTEvent e ) {
@@ -148,7 +145,16 @@ public class DObject extends Observable implements Observer,
 		}
 		return true;
 	}
-
+	
+	protected Boolean intersectMouse( MouseEvent me ) {
+		me = (MouseEvent)modifyEvent( me );
+		Boolean res = ( me.getX() >= 0 && 
+				me.getY() >= 0 && 
+				me.getX() <= this.getWidth() && 
+				me.getY() <= getHeight() );
+		return ( res || intersectAnyChild( me ) );
+	}
+	
 	public int getPosX() {
 		return this.pos_x;
 	}
@@ -191,6 +197,22 @@ public class DObject extends Observable implements Observer,
 		this.setHeight( height );
 	}
 	
+	public AnimationChain animate( PVector from, PVector to, int duration, Lambda<PVector> handler ) {
+		return animate( from, to, duration, AnimationChain.EASE_LINEAR, handler );
+	}
+	
+	public AnimationChain animate( final PVector from, final PVector to, int duration, int mode, final Lambda<PVector> handler ) {
+		return animate( 0.0f, 1.0f, duration, mode, new Lambda<Float>() {
+			public void run( Float v ) {
+				handler.run( new PVector(
+					applet.map( v, 0.0f, 1.0f, from.x, to.x ),
+					applet.map( v, 0.0f, 1.0f, from.y, to.y ),
+					applet.map( v, 0.0f, 1.0f, from.z, to.z )
+				) );
+			} 
+		} );
+	}
+	
 	public AnimationChain animate( float start, float end, int duration, Lambda<Float> handler ) {
 		return animate( start, end, duration, AnimationChain.EASE_LINEAR, handler );
 	}
@@ -199,15 +221,6 @@ public class DObject extends Observable implements Observer,
 		AnimationChain ac = new AnimationChain();
 		ac.queue( start, end, duration, mode, handler );
 		return ac;
-	}
-	
-	protected Boolean intersectMouse( MouseEvent me ) {
-		me = (MouseEvent)modifyEvent( me );
-		Boolean res = ( me.getX() >= 0 && 
-				me.getY() >= 0 && 
-				me.getX() <= this.getWidth() && 
-				me.getY() <= getHeight() );
-		return ( res || intersectAnyChild( me ) );
 	}
 	
 	protected AWTEvent modifyEvent( AWTEvent e ) {
@@ -321,9 +334,10 @@ public class DObject extends Observable implements Observer,
 				}
 			}
 			bubbled = 0;
-			if ( this.parent.intersect( _e ) ) {
-				this.parent.bubbleEvent( _e );
-			}
+			parent.bubbleEvent( _e );
+//			if ( this.parent.intersect( _e ) ) {
+//				this.parent.bubbleEvent( _e );
+//			}
 		}
 		return bubbled;
 	}
