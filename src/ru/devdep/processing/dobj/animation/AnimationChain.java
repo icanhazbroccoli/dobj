@@ -104,27 +104,26 @@ public class AnimationChain implements Runnable {
 			
 			final AnimationStep animation_step = this.stack.get( i );
 			
-			if ( animation_step.getStart() == animation_step.getEnd() ) {
-				continue;
-			}
-			
 			float duration = (float)animation_step.getDuration();
 			float step = (float) ( 1000 / fps );
 			float current = 0;
 			
-			while ( current <= duration ) {
-				final float val = ease( animation_step.getMode(), current,
-						animation_step.getStart(), animation_step.getEnd() - animation_step.getStart(), duration );
-				this.timer.schedule( new TimerTask() { public void run() {
-					( (Lambda<Float> )animation_step.getHandler() ).run( val );
-				} }, (long) ( current ) );
-				current += step;
-			}
+			if ( animation_step.getStart() != animation_step.getEnd() ) {
 			
-			this.timer.schedule( new TimerTask() { public void run() {
-				( (Lambda<Float>)animation_step.getHandler() ).run( animation_step.getEnd() );
-			} }, (long) ( current ) );
-			current += 1;
+				while ( current <= duration ) {
+					final float val = ease( animation_step.getMode(), current,
+							animation_step.getStart(), animation_step.getEnd() - animation_step.getStart(), duration );
+					this.timer.schedule( new TimerTask() { public void run() {
+						( (Lambda<Float> )animation_step.getHandler() ).run( val );
+					} }, (long) ( current ) );
+					current += step;
+				}
+				
+				this.timer.schedule( new TimerTask() { public void run() {
+					( (Lambda<Float>)animation_step.getHandler() ).run( animation_step.getEnd() );
+				} }, (long) ( current ) );
+				current += 1;
+			}
 			
 			if ( this.finalizer != null ) {
 				this.timer.schedule( new TimerTask() {
@@ -147,8 +146,13 @@ public class AnimationChain implements Runnable {
 	}
 	
 	public void cancel() {
-		if ( this.timer != null )
-			this.timer.cancel();
+		if ( this.timer != null ) {
+			try {
+				this.timer.cancel();
+			} catch ( IllegalStateException e ) {
+				
+			}
+		}
 		this.stack.clear();
 		this.timer = new Timer();
 	}

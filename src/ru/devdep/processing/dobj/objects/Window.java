@@ -2,6 +2,7 @@ package ru.devdep.processing.dobj.objects;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import TUIO.*;
 
 import processing.core.*;
 

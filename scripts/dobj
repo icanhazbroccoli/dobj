@@ -8,7 +8,7 @@ class AppBuilder
     def file_template( template_name, opts = {} )
       templates = {}
 templates[ :base ] = <<-eos
-#{"import ru.devdep.processing.dobj.objects.*;
+import ru.devdep.processing.dobj.objects.*;
 import ru.devdep.processing.dobj.events.*;
 import ru.devdep.processing.dobj.animation.*;
 

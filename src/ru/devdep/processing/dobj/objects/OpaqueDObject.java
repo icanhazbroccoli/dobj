@@ -6,11 +6,12 @@ import ru.devdep.processing.dobj.animation.Lambda;
 
 public class OpaqueDObject extends DObject {
 	
-	protected float opacity = 1.0f;
+	protected float opacity;
 	AnimationChain fading_ac;
 	
 	public OpaqueDObject( PApplet p ) {
 		super( p );
+		this.opacity = 1.0f;
 	}
 	
 	public void draw() {
@@ -89,7 +90,8 @@ public class OpaqueDObject extends DObject {
 	    	applet.tint( 255, Math.round( 255.0f * opacity ) );
 		}
 	    scope_runner.run();
-	    if ( opacity < 1.0f )
+	    if ( opacity < 1.0f ) {
 	    	applet.noTint();
+	    }
 	}
 }

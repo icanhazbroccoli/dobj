@@ -25,6 +25,7 @@ public class DObject extends Observable implements Observer,
 	protected int z_index = 0;
 	protected ArrayList<DObject> children;
 	protected DObject parent = null;
+	protected int matrix_pushed_times = 0;
 
 	public DObject( PApplet p ) {
 		this.setApplet( p );
@@ -227,13 +228,35 @@ public class DObject extends Observable implements Observer,
 		return modifyEvent( e, true );
 	}
 	
-	protected AWTEvent modifyEvent( AWTEvent e, Boolean invert ) {
+	protected PVector translatePoint( final PVector src, final Boolean invert ) {
+		final PMatrix3D m0 = new PMatrix3D();
+		applet.getMatrix( m0 );
+		final PVector res = new PVector( 0, 0 );
+		withModifiers( new Runnable() { public void run() {
+			PMatrix3D m1 = new PMatrix3D();
+			applet.getMatrix( m1 );
+			PMatrix3D translate_matrix = new PMatrix3D(
+				m1.m00 / m0.m00, m1.m01 - m0.m01, m1.m02 - m0.m02, m1.m03 - m0.m03,
+				m1.m10 - m0.m10, m1.m11 / m0.m11, m1.m12 - m0.m12, m1.m13 - m0.m13,
+				m1.m20 - m0.m20, m1.m21 - m0.m21, m1.m22 / m0.m22, m1.m23 - m0.m23,
+		                      0,               0,               0,               1
+			);
+			if ( invert ) {
+				translate_matrix.invert();
+			}
+			translate_matrix.mult( src, res );
+			res.sub( src );
+		} } );
+		
+		return res;
+	}
+	
+	protected AWTEvent modifyEvent( AWTEvent e, final Boolean invert ) {
 		AWTEvent _e = e;
 		if ( _e instanceof MouseEvent ) {
 			final CatchableMouseEvent me = new CatchableMouseEvent( (MouseEvent)_e );
 			final PVector original_pos = new PVector( me.getX(), me.getY() );
 			final PMatrix3D m0 = new PMatrix3D();
-			final Boolean f_invert = invert;
 			applet.getMatrix( m0 );
 			withModifiers( new Runnable() { public void run() {
 				PMatrix3D m1 = new PMatrix3D();
@@ -244,7 +267,7 @@ public class DObject extends Observable implements Observer,
 					m1.m20 - m0.m20, m1.m21 - m0.m21, m1.m22 / m0.m22, m1.m23 - m0.m23,
 			                      0,               0,               0,               1
 				);
-				if ( f_invert )
+				if ( invert )
 					translate_matrix.invert();
 				PVector translated_pos = new PVector( 0, 0 );
 				translate_matrix.mult( original_pos, translated_pos );
@@ -335,96 +358,110 @@ public class DObject extends Observable implements Observer,
 			}
 			bubbled = 0;
 			parent.bubbleEvent( _e );
-//			if ( this.parent.intersect( _e ) ) {
-//				this.parent.bubbleEvent( _e );
-//			}
 		}
 		return bubbled;
 	}
 	
+	protected void pushMatrix() {
+		try {
+			applet.pushMatrix();
+			matrix_pushed_times++;
+		} catch ( RuntimeException e ) {
+		}
+		
+	}
+	
+	protected void popMatrix() {
+		try {
+			applet.popMatrix();
+			matrix_pushed_times--;
+		} catch ( RuntimeException e ) {
+		}
+	}
+	
 	protected void withTranslate( float tx, float ty, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.translate( tx, ty );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 	
 	protected void withTranslate( float tx, float ty, float tz, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.translate( tx, ty, tz );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 	
 	public void withRotate( float angle, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.rotate( angle );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withRotateX( float angle, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.rotateX( angle );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withRotateY( float angle, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.rotateY( angle );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withRotateZ( float angle, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.rotateZ( angle );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withRotate( float angle, float vx, float vy, float vz, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.rotate( angle, vx, vy, vz );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withScale( float s, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.scale( s );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withScale( float sx, float sy, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.scale( sx, sy );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withScale( float sx, float sy, float sz, Runnable scope_runner ) {
-		applet.pushMatrix();
-		applet.pushMatrix();
+		pushMatrix();
+		pushMatrix();
 		applet.scale( sx, sy, sz );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withShearX( float angle, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.shearX( angle );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withShearY( float angle, Runnable scope_runner ) {
-		applet.pushMatrix();
+		pushMatrix();
 		applet.shearY( angle );
 		scope_runner.run();
-		applet.popMatrix();
+		popMatrix();
 	}
 
 	public void withRectMode( int mode, Runnable scope_runner ) {
